@@ -291,8 +291,6 @@ void process_management_frame(dot11_h *dot11_hdr) {
                 e1.first->second->beacons += 1;
         }
 
-
-
     } else {
 
         //generally, Management frame 's DS set is 00
