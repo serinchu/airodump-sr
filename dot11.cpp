@@ -146,7 +146,7 @@ void listen_wlan(const char *if_name) {
             fprintf(stderr, "couldn't open device %s: %s\n", if_name, errbuf);
             exit(-1);
     }
-    if( pcap_set_rfmon(handle, 1) == 0 ) {
+    if( pcap_set_rfmon(handle, 13) == 0 ) {
         //monitor mode enabled
     }
 #if SETFILTER
