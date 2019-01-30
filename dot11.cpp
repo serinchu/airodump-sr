@@ -141,12 +141,15 @@ void print_mac(const MAC *mac_addr) {
 /////////////////////////////////////////////////////////////////////////////////
 void listen_wlan(const char *if_name) {
     char errbuf[PCAP_ERRBUF_SIZE];
-    pcap_t* handle = pcap_open_live(if_name, BUFSIZ, 1, 1000, errbuf);
+    pcap_t *handle = pcap_create(if_name, errbuf);
+    //pcap_t* handle = pcap_open_live(if_name, BUFSIZ, 1, 1000, errbuf);
     if (handle == nullptr) {
             fprintf(stderr, "couldn't open device %s: %s\n", if_name, errbuf);
             exit(-1);
     }
     if( pcap_set_rfmon(handle, 13) == 0 ) {
+        pcap_set_promisc(handle, 0);
+        pcap_activate(handle);
         //monitor mode enabled
     }
 #if SETFILTER
