@@ -17,7 +17,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
     dot11.cpp \
-    dump_print.cpp
+    dump_print.cpp \
+    radiotap.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

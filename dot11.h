@@ -24,13 +24,17 @@ typedef struct _MAC{
 }MAC;
 
 static int8_t g_pwr;
-static int8_t g_channel;
-static int8_t g_mb = 0;
+static uint8_t g_channel;
+static uint8_t g_mb;
 static std::string g_enc;
 static std::string g_cipher;
 static std::string g_auth;
-static std::string g_SSID;
-static std::string g_probe;
+
+struct ssid{
+    uint8_t len;
+    std::string essid;
+};
+static struct ssid g_SSID;
 
 #pragma pack(push,1)
 
@@ -38,13 +42,13 @@ typedef struct {
     int8_t pwr = 0;
     uint16_t beacons = 0;
     uint16_t datas = 0;
-    uint8_t psec = 0;
-    int8_t channel = -1;
-    int8_t mb = 0;
+    uint8_t psec_datas = 0;
+    uint8_t channel = 0;
+    uint8_t mb = 0;
     std::string enc = std::string("");
     std::string cipher = std::string("");
     std::string auth = std::string("");
-    std::string SSID = std::string("???");
+    std::string SSID = std::string("");
 } ap_info;
 
 typedef struct {
@@ -53,13 +57,6 @@ typedef struct {
     uint16_t frames = 0;
     std::string probe = std::string("");
 } st_info;
-
-typedef struct _radiotap_h {
-    uint8_t  version;
-    uint8_t  pad;
-    uint16_t len;
-    uint32_t present;
-} radiotap_h;
 
 typedef struct _dot11_h {
     uint16_t fc;    //frame control bit
@@ -112,7 +109,34 @@ enum {
 } mgmt_subtype;
 
 const int mgmt_fixed_parameter_len[14] = {
-  4, 6, 10, 6, 0, 12, 0, 0, 10, 0, 2, 6, 2, 9
+  4, 6, 10, 6, 0, 12, 0, 0, 12, 0, 2, 6, 2, 9
+};
+
+struct mb {
+    std::string rate;
+    uint8_t hex_val;
+};
+
+const struct mb MB_supported_rate[] = {
+    {  "  ",    0 },
+    {  "1b", 0x82 },
+    {  "2b", 0x84 },
+    {"5.5b", 0x8b },
+    { "11b", 0x96 },
+    //HR-DSSS 802.11b
+    {   "1", 0x02 },
+    {   "2", 0x04 },
+    { "5.5", 0x0b },
+    {  "11", 0x16 },
+    {   "6", 0x0c },
+    {   "9", 0x12 },
+    {  "12", 0x18 },
+    {  "18", 0x24 },
+    {  "24", 0x30 },
+    {  "36", 0x48 },
+    {  "48", 0x60 },
+    { "54e", 0x6c },
+    //ERP-OFDM 802.11g
 };
 
 enum {
@@ -170,15 +194,28 @@ enum {
     p_VS = 221,     //vendor specific element
 } tagged_params;
 
+enum {
+    GROUP_CIPHER_SUITE,
+    WEP40,
+    TKIP,
+    CRESERVED,
+    CCMP,
+    WEP104
+};
 
+enum {
+    ARESERVED,
+    DOT1X_AUTH,
+    PSK
+};
 
-void print_ap();
+void print_ap(uint8_t);
 void print_st();
-void ThreadMain();
+void ViewThread();
 
 void print_mac(const MAC *);
 
-void listen_wlan(char *);
+void listen_wlan(const char *);
 void process_management_frame(dot11_h *);
 void process_data_frame(dot11_h *);
 
